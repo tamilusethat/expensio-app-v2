@@ -64,7 +64,24 @@ jobs:
           npx cap add android || echo "already added"
           npx cap sync android
 
-      # ── 8. Android SDK ────────────────────────────────────────────────────
+      # ── 8. Fix Kotlin duplicate class conflict ────────────────────────────
+      - name: Fix Kotlin version conflict
+        working-directory: frontend/android
+        run: |
+          cat >> build.gradle << 'EOF'
+
+          subprojects {
+              configurations.all {
+                  resolutionStrategy {
+                      force "org.jetbrains.kotlin:kotlin-stdlib:1.9.10"
+                      force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10"
+                      force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10"
+                  }
+              }
+          }
+          EOF
+
+      # ── 9. Android SDK ────────────────────────────────────────────────────
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
